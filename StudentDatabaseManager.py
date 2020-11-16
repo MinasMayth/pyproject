@@ -37,28 +37,30 @@ be able to end the script now is through the "exit" command or a hard restart of
 
 #Import of libraries and setting up the sqlite commands
 
+import os.path
 import sqlite3
 from tabulate import tabulate
 
 #Function to add a new entry to the database
-def newEntry():
+def newEntry(student_attributes = ()):
     
-    conn = sqlite3.connect('daba.db')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "daba.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     
-    print("Please enter the details of the new student.")
-    
-    student_attributes = ()
-    student_attributes += (input_checker(input("First name: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Last name: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Address: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Class: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Mathematics grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("Science grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("English grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("Dutch grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("Art grade: ").upper(), "FLOAT"),)
-    
+        
+    if(student_attributes == ()):
+        print("Please enter the details of the new student.")
+        student_attributes += (input_checker(input("First name: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Last name: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Address: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Class: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Mathematics grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("Science grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("English grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("Dutch grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("Art grade: ").upper(), "FLOAT"),)
 
     #Avg Calculator
     sum_grade = 0
@@ -81,7 +83,9 @@ def newEntry():
 #Function to delete an entry from the database according to ROW ID
 def delete(x):
     
-    conn = sqlite3.connect('daba.db')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "daba.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     c.execute("DELETE FROM students WHERE rowid=?",str(x)) 
@@ -96,7 +100,9 @@ def delete(x):
 #Function to edit a specific value on a row
 def editkey_value(i):
    
-    conn = sqlite3.connect('daba.db')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "daba.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     
     valid_types = ["first_name", "last_name", "address", "class", "matg" ,"scig", "eng", "dug", "artg"]
@@ -111,7 +117,7 @@ def editkey_value(i):
             value_of_attribute = "'"+value_of_attribute+"'"
             c.execute('UPDATE students SET %s=%s WHERE rowid=%s' %(type_of_attribute,value_of_attribute,i))
             conn.commit()
-            break;
+            break
         elif type_of_attribute in valid_types[4:9]:
             value_of_attribute = input_checker(input("Please enter the new value. ").upper(), "FLOAT")
             value_of_attribute = "'"+str(value_of_attribute)+"'"
@@ -132,7 +138,7 @@ def editkey_value(i):
             
             c.execute('UPDATE students SET sum=%s, avg=%s  WHERE rowid=%s' %(sum_grade,avg_grade,i))
             conn.commit()                    
-            break;
+            break
             
         else:
             print("Invalid input. Please try again.")
@@ -140,26 +146,28 @@ def editkey_value(i):
     conn.close()
 
 #Function to completely replace a row
-def editkey_full(i):
+def editkey_full(i,student_attributes = ()):
     
-    conn = sqlite3.connect('daba.db')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "daba.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     
     print("Let's enter all the new values, shall we?")
     
-    student_attributes = ()
-    
-    student_attributes += (input_checker(input("First name: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Last name: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Address: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Class: ").upper(), "STRING"),)
-    student_attributes += (input_checker(input("Mathematics grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("Science grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("English grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("Dutch grade: ").upper(), "FLOAT"),)
-    student_attributes += (input_checker(input("Art grade: ").upper(), "FLOAT"),)
-    
-    
+    if(student_attributes==()):
+        student_attributes += (input_checker(input("First name: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Last name: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Address: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Class: ").upper(), "STRING"),)
+        student_attributes += (input_checker(input("Mathematics grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("Science grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("English grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("Dutch grade: ").upper(), "FLOAT"),)
+        student_attributes += (input_checker(input("Art grade: ").upper(), "FLOAT"),)
+    print("----These will be the new values----")
+    print(student_attributes)
+    print("----These will be the new values----")
     #Avg Calculator
     sum_grade = 0
     for value in student_attributes[4:8]:
@@ -177,20 +185,25 @@ def editkey_full(i):
     
     c.execute("UPDATE students SET first_name=?, last_name=?, address=?, class=?, matg=?, scig=?, eng=?, dug=?, artg=?, sum=?, avg=? WHERE rowid=?",student_attributes)
     conn.commit()
+    print("!executed!")
     
     conn.close()
 
 #Search Function!    
-def searchfunction():
+def searchfunction(decision="",student=""):
     
-    conn = sqlite3.connect('daba.db')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "daba.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    
-    decision = input("Search by [F]irst name, [L]ast name, or [R]ow ID? ").upper()
+
+    if (decision==""):
+        decision = input("Search by [F]irst name, [L]ast name, or [R]ow ID? ").upper()
     
     
     if decision == "F":
-        student = input_checker(input("What is the first name of the student you are searching for? ").upper(), "STRING")
+        if (student==""):
+            student = input_checker(input("What is the first name of the student you are searching for? ").upper(), "STRING")
         c.execute("SELECT rowid,* FROM students WHERE first_name= '%s'" %(student))
         
         student_rows = (c.fetchall())
@@ -202,7 +215,8 @@ def searchfunction():
             
     #Last Name Search
     elif decision == "L":
-        student = input_checker(input("What is the last name of the student you are searching for? ").upper(), "STRING")
+        if (student==""):
+            student = input_checker(input("What is the last name of the student you are searching for? ").upper(), "STRING")
         c.execute("SELECT rowid,* FROM students WHERE last_name= '%s'" %(student))
         
         student_rows = (c.fetchall())
@@ -214,7 +228,8 @@ def searchfunction():
         
     #Row ID Search
     elif decision == "R":
-        student = input_checker(input("What is the Row ID of the student you are searching for? ").upper(), "INTEGER")
+        if (student==""):
+            student = input_checker(input("What is the Row ID of the student you are searching for? ").upper(), "INTEGER")
         c.execute("SELECT rowid, * FROM students WHERE rowid= '%s'" %(student))
         
         student_rows = (c.fetchall())
@@ -229,13 +244,14 @@ def searchfunction():
 #Prints all Rows
 def print_all(caller):
     
-    conn = sqlite3.connect('daba.db')
-    c = conn.cursor()
-    if(caller=="cl"):
-        print("Here are all the entries in our database:")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "daba.db")
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()       
     c.execute('SELECT rowid, * FROM students')
     all_rows = c.fetchall()
     if(caller=="cl"):
+        print("Here are all the entries in our database:")
         print(tabulate(all_rows, headers=['Row ID', 'First Name', 'Last Name', 'Address', 'Class', 'Math Grade', 'Science Grade', 'English Grade', 'Dutch Grade', 'Art Grade', 'Sum Grade', 'Average Grade']))
     elif(caller=="gui"):
         return(all_rows)
@@ -245,7 +261,9 @@ def print_all(caller):
 
 def classAvgs():
     
-    conn = sqlite3.connect('daba.db')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "daba.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     
     #This first part finds all student classes that exist in the database
@@ -290,9 +308,9 @@ def classAvgs():
     #Apply inline formatting here as well, idk why is it not working for me, on it
     final_class_output.append("The class with the best average is Class " + highest_class + ", with an overall average of " + str(highest_class_avg) + ".")
     
-    return(final_class_output)
-    
     conn.close()
+
+    return(final_class_output)
 
 
 #Validation checker! Multifunctional tool, so make good use of it!
